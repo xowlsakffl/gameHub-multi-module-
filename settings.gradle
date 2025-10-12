@@ -1,0 +1,8 @@
+rootProject.name = 'onion-market'
+
+include 'onion-core', 'onion-domain', 'onion-user-api', 'onion-admin-api'
+
+project(':onion-core').projectDir = file('onion-core')
+project(':onion-domain').projectDir = file('onion-domain')
+project(':onion-user-api').projectDir = file('onion-user-api')
+project(':onion-admin-api').projectDir = file('onion-admin-api')
