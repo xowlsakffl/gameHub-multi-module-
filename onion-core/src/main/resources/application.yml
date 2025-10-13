@@ -1,0 +1,11 @@
+spring:
+jpa:
+open-in-view: false
+
+jwt:
+secret: ${JWT_SECRET}
+expiration: ${JWT_EXPIRATION}
+
+logging:
+level:
+org.springframework.security: INFO

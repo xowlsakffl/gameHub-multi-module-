@@ -1,0 +1,31 @@
+server:
+  port: ${ADMIN_SERVER_PORT}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: onion-admin-api
+
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: ${DB_DRIVER}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
