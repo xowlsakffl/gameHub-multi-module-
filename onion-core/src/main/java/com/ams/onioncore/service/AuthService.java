@@ -60,8 +60,10 @@ public class AuthService {
         }
 
         // JWT 토큰 발급
-        String token = jwtTokenProvider.createToken(user.getEmail(),
-                user.getRoles().stream().map(Enum::name).collect(Collectors.toSet()));
+        String token = jwtTokenProvider.createToken(
+                user.getEmail(),
+                user.getRoles().stream().map(Enum::name).collect(Collectors.toSet())
+        );
 
         return new TokenResponse(token);
     }

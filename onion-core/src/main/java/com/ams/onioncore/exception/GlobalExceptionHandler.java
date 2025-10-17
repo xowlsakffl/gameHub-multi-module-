@@ -4,47 +4,74 @@ import com.ams.onioncore.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 커스텀 예외 처리
+    // CustomException - ErrorCode 기반
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
-        ErrorCode errorCode = e.getErrorCode();
+        ErrorCode code = e.getErrorCode();
         return ResponseEntity
-                .status(errorCode.getStatus())
-                .body(ApiResponse.fail(errorCode.getStatus(), errorCode.getMessage()));
+                .status(code.getStatus())
+                .body(ApiResponse.fail(code.getStatus(), code.getMessage()));
     }
 
-    // 유효성 검증 실패 (@Valid)
+    // Security - 사용자 없음
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFound(UsernameNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_NOT_FOUND.getStatus())
+                .body(ApiResponse.fail(ErrorCode.USER_NOT_FOUND.getStatus(), ErrorCode.USER_NOT_FOUND.getMessage()));
+    }
+
+    // Security - 비밀번호 불일치
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException e) {
+        return ResponseEntity
+                .status(ErrorCode.INVALID_CREDENTIALS.getStatus())
+                .body(ApiResponse.fail(ErrorCode.INVALID_CREDENTIALS.getStatus(), ErrorCode.INVALID_CREDENTIALS.getMessage()));
+    }
+
+    // Security - 접근 권한 없음
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException e) {
+        return ResponseEntity
+                .status(ErrorCode.UNAUTHORIZED.getStatus())
+                .body(ApiResponse.fail(ErrorCode.UNAUTHORIZED.getStatus(), ErrorCode.UNAUTHORIZED.getMessage()));
+    }
+
+    // Validation 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
-                .orElse("잘못된 요청 값입니다.");
+                .map(err -> err.getField() + " : " + err.getDefaultMessage())
+                .orElse(ErrorCode.BAD_REQUEST.getMessage());
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail(HttpStatus.BAD_REQUEST, message));
+                .status(ErrorCode.BAD_REQUEST.getStatus())
+                .body(ApiResponse.fail(ErrorCode.BAD_REQUEST.getStatus(), message));
     }
 
-    // ConstraintViolationException (@Validated 등에서 발생)
+    // ConstraintViolationException
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException e) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.fail(HttpStatus.BAD_REQUEST, e.getMessage()));
+                .status(ErrorCode.BAD_REQUEST.getStatus())
+                .body(ApiResponse.fail(ErrorCode.BAD_REQUEST.getStatus(), e.getMessage()));
     }
 
-    // 예기치 못한 기타 예외
+    // 그 외 모든 예외
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
         e.printStackTrace();
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."));
+                .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                .body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR.getStatus(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 }
