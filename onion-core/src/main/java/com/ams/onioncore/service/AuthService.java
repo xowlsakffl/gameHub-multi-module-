@@ -39,6 +39,7 @@ public class AuthService {
         // 새 유저 생성
         User user = User.builder()
                 .email(request.getEmail())
+                .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(Set.of(Role.USER))
                 .build();

@@ -1,4 +1,4 @@
-rootProject.name = 'onion-market'
+rootProject.name = 'onion'
 
 include 'onion-core', 'onion-domain', 'onion-user-api', 'onion-admin-api'
 

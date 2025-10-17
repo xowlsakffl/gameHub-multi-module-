@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.ams'
 version = '0.0.1-SNAPSHOT'
-description = 'onion-market'
+description = 'onion'
 
 java {
     toolchain {
