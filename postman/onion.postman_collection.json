@@ -1,0 +1,136 @@
+{
+  "info": {
+    "name": "Onion - Game Party API",
+    "_postman_id": "2c7a2b15-8ad1-4bce-b8cf-20251017abcd",
+    "description": "JWT 기반 Onion 게임파티 API 테스트 컬렉션 (v2)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "회원가입",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"1234\",\n  \"nickname\": \"OnionMaster\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/auth/signup",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "auth", "signup"]
+        }
+      }
+    },
+    {
+      "name": "로그인 (JWT 저장)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let res = pm.response.json();",
+              "if (res.data && res.data.accessToken) {",
+              "    pm.environment.set('token', res.data.accessToken);",
+              "    console.log('JWT 토큰 저장됨:', res.data.accessToken);",
+              "} else {",
+              "    console.log('JWT 토큰이 응답에 없음:', res);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"1234\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "파티 생성",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"롤 듀오 구해요\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 2,\n  \"description\": \"실버 이상 듀오 환영\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/party",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "party"]
+        }
+      }
+    },
+    {
+      "name": "파티 수정",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"롤 듀오 모집 [수정됨]\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 3,\n  \"description\": \"실버 이상 듀오 환영\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/party/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "party", "1"]
+        }
+      }
+    },
+    {
+      "name": "파티 삭제",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "http://localhost:8081/api/party/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "party", "1"]
+        }
+      }
+    },
+    {
+      "name": "파티 목록 조회",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "http://localhost:8081/api/party?page=0&size=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["api", "party"],
+          "query": [
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "10" }
+          ]
+        }
+      }
+    }
+  ]
+}
