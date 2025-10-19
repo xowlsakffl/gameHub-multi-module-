@@ -6,6 +6,7 @@ import com.ams.onioncore.exception.CustomException;
 import com.ams.onioncore.exception.ErrorCode;
 import com.ams.oniondomain.entity.GameParty;
 import com.ams.oniondomain.entity.User;
+import com.ams.oniondomain.entity.enums.PartyStatus;
 import com.ams.oniondomain.repository.GamePartyRepository;
 import com.ams.oniondomain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class GamePartyService {
         GameParty party = GameParty.builder()
                 .title(request.getTitle())
                 .gameName(request.getGameName())
+                .type(request.getType())
                 .maxPlayer(request.getMaxPlayer())
                 .description(request.getDescription())
                 .creator(creator)
-                .status(GameParty.PartyStatus.OPEN)
+                .status(PartyStatus.OPEN)
                 .build();
 
-        gamePartyRepository.save(party);
-        return GamePartyResponse.from(party);
+        return GamePartyResponse.from(gamePartyRepository.save(party));
     }
 
     /** 전체 목록 조회 */
@@ -65,7 +66,14 @@ public class GamePartyService {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
-        party.update(request.getTitle(), request.getGameName(), request.getMaxPlayer(), request.getDescription());
+        party.update(
+                request.getTitle(),
+                request.getGameName(),
+                request.getMaxPlayer(),
+                request.getDescription(),
+                request.getType()
+        );
+
         return GamePartyResponse.from(party);
     }
 
@@ -79,5 +87,17 @@ public class GamePartyService {
         }
 
         gamePartyRepository.delete(party);
+    }
+
+    public GamePartyResponse changeStatus(String email, Long id, String newStatus) {
+        GameParty party = gamePartyRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
+
+        if (!party.getCreator().getEmail().equals(email)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
+        party.changeStatus(PartyStatus.valueOf(newStatus));
+        return GamePartyResponse.from(party);
     }
 }

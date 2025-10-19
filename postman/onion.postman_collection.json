@@ -32,12 +32,7 @@
           "script": {
             "exec": [
               "let res = pm.response.json();",
-              "if (res.data && res.data.accessToken) {",
-              "    pm.environment.set('token', res.data.accessToken);",
-              "    console.log('JWT 토큰 저장됨:', res.data.accessToken);",
-              "} else {",
-              "    console.log('JWT 토큰이 응답에 없음:', res);",
-              "}"
+              "pm.collectionVariables.set('token', res.data.accessToken);"
             ]
           }
         }
@@ -68,7 +63,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"롤 듀오 구해요\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 2,\n  \"description\": \"실버 이상 듀오 환영\"\n}"
+          "raw": "{\n  \"title\": \"롤 듀오 구해요\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 2,\n  \"description\": \"실버 이상 듀오 환영\",\n  \"type\": \"AUTO_JOIN\"\n}"
         },
         "url": {
           "raw": "http://localhost:8081/api/party",
@@ -89,7 +84,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"롤 듀오 모집 [수정됨]\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 3,\n  \"description\": \"실버 이상 듀오 환영\"\n}"
+          "raw": "{\n  \"title\": \"롤 듀오 모집 [수정됨]\",\n  \"gameName\": \"League of Legends\",\n  \"maxPlayer\": 3,\n  \"description\": \"실버 이상 듀오 환영 [수정됨]\",\n  \"type\": \"REQUEST_JOIN\"\n}"
         },
         "url": {
           "raw": "http://localhost:8081/api/party/1",
@@ -129,6 +124,33 @@
             { "key": "page", "value": "0" },
             { "key": "size", "value": "10" }
           ]
+        }
+      }
+    },
+    {
+      "name": "파티 단건 조회",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "http://localhost:8081/api/party/1",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["party", "1"]
+        }
+      }
+    },
+    {
+      "name": "파티 상태 변경 (OPEN ↔ CLOSED)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "http://localhost:8081/api/party/1/status?status=CLOSED",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["party", "1", "status"],
+          "query": [{ "key": "status", "value": "CLOSED" }]
         }
       }
     }

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,11 +25,11 @@ public class GamePartyController {
     /** 모집글 등록 */
     @PostMapping
     public ResponseEntity<ApiResponse<GamePartyResponse>> create(
-            @AuthenticationPrincipal UserDetails user,
+            @AuthenticationPrincipal(expression = "username") String email,
             @RequestBody GamePartyRequest request
     ) {
-        log.info("Authenticated user: {}", user.getUsername());
-        GamePartyResponse response = gamePartyService.create(user.getUsername(), request);
+        log.info("Authenticated user: {}", email);
+        GamePartyResponse response = gamePartyService.create(email, request);
         return ResponseEntity.ok(ApiResponse.success(response, "모집글 등록 성공"));
     }
 
@@ -59,21 +58,36 @@ public class GamePartyController {
     /** 수정 */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<GamePartyResponse>> update(
-            @AuthenticationPrincipal UserDetails user,
+            @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long id,
             @RequestBody GamePartyRequest request
     ) {
-        GamePartyResponse response = gamePartyService.update(user.getUsername(), id, request);
+        GamePartyResponse response = gamePartyService.update(email, id, request);
         return ResponseEntity.ok(ApiResponse.success(response, "모집글 수정 성공"));
     }
 
     /** 삭제 */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
-            @AuthenticationPrincipal UserDetails user,
+            @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long id
     ) {
-        gamePartyService.delete(user.getUsername(), id);
+        gamePartyService.delete(email, id);
         return ResponseEntity.ok(ApiResponse.successMessage("모집글 삭제 성공"));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<GamePartyResponse>> changeStatus(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long id,
+            @RequestParam("status") String status) {
+
+        GamePartyResponse response = gamePartyService.changeStatus(
+                email,
+                id,
+                status
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response, "파티 상태 변경 완료"));
     }
 }

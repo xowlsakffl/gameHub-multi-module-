@@ -1,6 +1,7 @@
 package com.ams.onioncore.dto;
 
 import com.ams.oniondomain.entity.GameParty;
+import com.ams.oniondomain.entity.enums.PartyType;
 import lombok.*;
 
 @Getter
@@ -12,6 +13,7 @@ public class GamePartyResponse {
     private Long id;
     private String title;
     private String gameName;
+    private PartyType type;
     private int maxPlayer;
     private int currentPlayers;
     private String description;
@@ -24,6 +26,7 @@ public class GamePartyResponse {
                 .id(party.getId())
                 .title(party.getTitle())
                 .gameName(party.getGameName())
+                .type(party.getType())
                 .maxPlayer(party.getMaxPlayer())
                 .currentPlayers(party.getCurrentPlayers())
                 .description(party.getDescription())

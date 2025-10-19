@@ -1,5 +1,6 @@
 package com.ams.onioncore.dto;
 
+import com.ams.oniondomain.entity.enums.PartyType;
 import lombok.*;
 
 @Getter
@@ -12,4 +13,5 @@ public class GamePartyRequest {
     private String gameName;
     private int maxPlayer;
     private String description;
+    private PartyType type;
 }

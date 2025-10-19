@@ -6,7 +6,7 @@ import com.ams.onioncore.dto.TokenResponse;
 import com.ams.onioncore.exception.CustomException;
 import com.ams.onioncore.exception.ErrorCode;
 import com.ams.onioncore.security.JwtTokenProvider;
-import com.ams.oniondomain.entity.Role;
+import com.ams.oniondomain.entity.enums.Role;
 import com.ams.oniondomain.entity.User;
 import com.ams.oniondomain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
