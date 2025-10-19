@@ -20,6 +20,7 @@ public class GamePartyResponse {
     private String status;
     private String creatorEmail;
     private String createdAt;
+    private String updatedAt;
 
     public static GamePartyResponse from(GameParty party) {
         return GamePartyResponse.builder()
@@ -33,6 +34,7 @@ public class GamePartyResponse {
                 .status(party.getStatus().name())
                 .creatorEmail(party.getCreator().getEmail())
                 .createdAt(party.getCreatedAt().toString())
+                .updatedAt(party.getUpdatedAt() != null ? party.getUpdatedAt().toString() : null)
                 .build();
     }
 }
