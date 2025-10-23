@@ -1,5 +1,6 @@
 package com.ams.oniondomain.entity;
 
+import com.ams.oniondomain.entity.enums.PartyRole;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,11 @@ public class PartyMember {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    /** 🟢 역할 컬럼 추가 (LEADER / MEMBER) */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PartyRole role;
+
     @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt;
 
@@ -32,9 +38,10 @@ public class PartyMember {
     private LocalDateTime updatedAt;
 
     @Builder
-    public PartyMember(GameParty party, User user, LocalDateTime joinedAt) {
+    public PartyMember(GameParty party, User user, PartyRole role, LocalDateTime joinedAt) {
         this.party = party;
         this.user = user;
+        this.role = role != null ? role : PartyRole.MEMBER; // 기본은 일반 멤버
         this.joinedAt = joinedAt != null ? joinedAt : LocalDateTime.now();
     }
 
@@ -46,6 +53,12 @@ public class PartyMember {
 
     @PreUpdate
     protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /** 🟡 역할 변경 (방장 위임 시 사용) */
+    public void changeRole(PartyRole newRole) {
+        this.role = newRole;
         this.updatedAt = LocalDateTime.now();
     }
 }

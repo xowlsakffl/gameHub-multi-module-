@@ -5,9 +5,12 @@ import com.ams.onioncore.dto.GamePartyResponse;
 import com.ams.onioncore.exception.CustomException;
 import com.ams.onioncore.exception.ErrorCode;
 import com.ams.oniondomain.entity.GameParty;
+import com.ams.oniondomain.entity.PartyMember;
 import com.ams.oniondomain.entity.User;
+import com.ams.oniondomain.entity.enums.PartyRole;
 import com.ams.oniondomain.entity.enums.PartyStatus;
 import com.ams.oniondomain.repository.GamePartyRepository;
+import com.ams.oniondomain.repository.PartyMemberRepository;
 import com.ams.oniondomain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +27,7 @@ import java.util.List;
 public class GamePartyService {
     private final GamePartyRepository gamePartyRepository;
     private final UserRepository userRepository;
+    private final PartyMemberRepository memberRepository;
 
     /** 모집글 등록 */
     public GamePartyResponse create(String email, GamePartyRequest request) {
@@ -39,7 +44,17 @@ public class GamePartyService {
                 .status(PartyStatus.OPEN)
                 .build();
 
-        return GamePartyResponse.from(gamePartyRepository.save(party));
+        gamePartyRepository.save(party);
+
+        PartyMember leader = PartyMember.builder()
+                .party(party)
+                .user(creator)
+                .role(PartyRole.LEADER)
+                .joinedAt(LocalDateTime.now())
+                .build();
+        memberRepository.save(leader);
+
+        return GamePartyResponse.from(party);
     }
 
     /** 전체 목록 조회 */
