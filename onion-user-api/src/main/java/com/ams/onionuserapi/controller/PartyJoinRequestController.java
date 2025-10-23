@@ -19,6 +19,16 @@ public class PartyJoinRequestController {
     private final PartyJoinRequestService partyJoinRequestService;
     private final Logger log = LoggerFactory.getLogger(PartyJoinRequestController.class);
 
+    /** 자동 참가 **/
+    @PostMapping("/{partyId}/auto-join")
+    public ResponseEntity<ApiResponse<Void>> autoJoin(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long partyId
+    ) {
+        partyJoinRequestService.autoJoin(email, partyId);
+        return ResponseEntity.ok(ApiResponse.successMessage("자동 참가 성공"));
+    }
+
     /** 참가 요청 생성 **/
     @PostMapping("/{partyId}/join")
     public ResponseEntity<ApiResponse<JoinResponse>> requestJoin(
