@@ -89,10 +89,17 @@ public class PartyMemberService {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
-        // Todo 개설자 강퇴 불가
-
         PartyMember target = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));
+
+        if (!target.getParty().equals(party)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        if (target.getUser().equals(party.getCreator())) {
+            throw new CustomException(ErrorCode.CANNOT_KICK_CREATOR);
+        }
+
         if (target.getRole() == PartyRole.LEADER) {
             throw new CustomException(ErrorCode.CANNOT_KICK_LEADER);
         }
