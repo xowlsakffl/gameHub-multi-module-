@@ -52,18 +52,22 @@ public class PartyJoinRequestController {
     /** 참가 요청 승인(방장 전용) **/
     @PostMapping("/join/{requestId}/approve")
     public ResponseEntity<ApiResponse<Void>> approveRequest(
+            @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long requestId
     ) {
-        partyJoinRequestService.approveRequest(requestId);
+        partyJoinRequestService.approveRequest(email, requestId);
         return ResponseEntity.ok(ApiResponse.successMessage("참가 요청 승인 성공"));
     }
+
 
     /** 참가 요청 거절(방장 전용) */
     @PostMapping("/join/{requestId}/reject")
     public ResponseEntity<ApiResponse<Void>> rejectRequest(
+            @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long requestId
     ) {
-        partyJoinRequestService.rejectRequest(requestId);
+        partyJoinRequestService.rejectRequest(email, requestId);
         return ResponseEntity.ok(ApiResponse.successMessage("참가 요청 거절 성공"));
     }
+
 }

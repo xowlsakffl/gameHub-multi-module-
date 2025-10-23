@@ -10,6 +10,7 @@ import com.ams.oniondomain.entity.PartyJoinRequest;
 import com.ams.oniondomain.entity.PartyMember;
 import com.ams.oniondomain.entity.User;
 import com.ams.oniondomain.entity.enums.JoinRequestStatus;
+import com.ams.oniondomain.entity.enums.PartyRole;
 import com.ams.oniondomain.entity.enums.PartyType;
 import com.ams.oniondomain.repository.GamePartyRepository;
 import com.ams.oniondomain.repository.PartyJoinRequestRepository;
@@ -84,18 +85,28 @@ public class PartyJoinRequestService {
         return JoinResponse.from(partyJoinRequestRepository.save(joinRequest));
     }
 
-    /** 승인 **/
+    /** 승인 (방장 전용) **/
     @Transactional
-    public void approveRequest(Long requestId) {
+    public void approveRequest(String email, Long requestId) {
         PartyJoinRequest request = partyJoinRequestRepository.findById(requestId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
+
+        GameParty party = request.getParty();
+        User requester = request.getRequester();
+
+        User approver = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        PartyMember approverMember = memberRepository.findByPartyAndUser(party, approver)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));
+
+        if (approverMember.getRole() != PartyRole.LEADER) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED); // 방장만 승인 가능
+        }
 
         if (request.getStatus() == JoinRequestStatus.APPROVED) {
             throw new CustomException(ErrorCode.REQUEST_ALREADY_APPROVED);
         }
-
-        GameParty party = request.getParty();
-        User requester = request.getRequester();
 
         if (memberRepository.existsByPartyAndUser(party, requester)) {
             throw new CustomException(ErrorCode.ALREADY_PARTY_MEMBER);
@@ -115,22 +126,42 @@ public class PartyJoinRequestService {
         PartyMember member = PartyMember.builder()
                 .party(party)
                 .user(requester)
+                .role(PartyRole.MEMBER)
                 .joinedAt(LocalDateTime.now())
                 .build();
-        memberRepository.save(member);
 
+        memberRepository.save(member);
         party.incrementPlayers();
     }
 
-    /** 거절 **/
-    public void rejectRequest(Long requestId) {
+    /** 거절 (방장 전용) **/
+    @Transactional
+    public void rejectRequest(String email, Long requestId) {
         PartyJoinRequest request = partyJoinRequestRepository.findById(requestId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
+
+        GameParty party = request.getParty();
+        User requester = request.getRequester();
+
+        User rejector = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        PartyMember rejectorMember = memberRepository.findByPartyAndUser(party, rejector)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));
+
+        if (rejectorMember.getRole() != PartyRole.LEADER) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED); // 방장만 거절 가능
+        }
 
         if (request.getStatus() == JoinRequestStatus.REJECTED) {
             throw new CustomException(ErrorCode.REQUEST_ALREADY_REJECTED);
         }
 
+        if (request.getStatus() == JoinRequestStatus.APPROVED) {
+            throw new CustomException(ErrorCode.REQUEST_ALREADY_APPROVED);
+        }
+
         request.reject();
     }
+
 }
