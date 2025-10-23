@@ -25,6 +25,23 @@ public class PartyMemberService {
     private final PartyMemberRepository memberRepository;
     private final UserRepository userRepository;
 
+    /** 특정 파티의 멤버 목록 조회 */
+    @Transactional(readOnly = true)
+    public List<PartyMember> getMembersByParty(Long partyId) {
+        GameParty party = gamePartyRepository.findById(partyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PARTY_NOT_FOUND));
+        return memberRepository.findAllByParty(party);
+    }
+
+    /** 내가 속한 파티 목록 조회 */
+    @Transactional(readOnly = true)
+    public List<GameParty> getMyParties(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        List<PartyMember> myMemberships = memberRepository.findAllByUser(user);
+        return myMemberships.stream().map(PartyMember::getParty).toList();
+    }
+
     /** 파티 나가기 */
     public void leaveParty(String email, Long partyId) {
         GameParty party = gamePartyRepository.findById(partyId)
@@ -71,6 +88,8 @@ public class PartyMemberService {
         if (leaderMember.getRole() != PartyRole.LEADER) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
+
+        // Todo 개설자 강퇴 불가
 
         PartyMember target = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));

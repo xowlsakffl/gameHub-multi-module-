@@ -164,4 +164,25 @@ public class PartyJoinRequestService {
         request.reject();
     }
 
+    /** 방장 전용 - 대기 중 참가 요청 목록 조회 */
+    @Transactional(readOnly = true)
+    public List<PartyJoinRequest> getPendingRequests(String email, Long partyId) {
+        GameParty party = gamePartyRepository.findById(partyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PARTY_NOT_FOUND));
+
+        User leader = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        PartyMember member = memberRepository.findByPartyAndUser(party, leader)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));
+
+        if (member.getRole() != PartyRole.LEADER) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
+        return partyJoinRequestRepository.findAllByParty(party).stream()
+                .filter(r -> r.getStatus() == JoinRequestStatus.PENDING)
+                .toList();
+    }
+
 }

@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/party")
 @RequiredArgsConstructor
@@ -70,4 +72,14 @@ public class PartyJoinRequestController {
         return ResponseEntity.ok(ApiResponse.successMessage("참가 요청 거절 성공"));
     }
 
+    /** 대기 중 참가 요청 조회 (방장 전용) */
+    @GetMapping("/{partyId}/join/pending")
+    public ResponseEntity<ApiResponse<List<JoinResponse>>> getPendingRequests(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long partyId
+    ) {
+        List<JoinResponse> responses = partyJoinRequestService.getPendingRequests(email, partyId)
+                .stream().map(JoinResponse::from).toList();
+        return ResponseEntity.ok(ApiResponse.success(responses, "대기 중 참가 요청 조회 성공"));
+    }
 }
