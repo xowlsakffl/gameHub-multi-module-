@@ -11,6 +11,7 @@ import com.ams.oniondomain.entity.PartyMember;
 import com.ams.oniondomain.entity.User;
 import com.ams.oniondomain.entity.enums.JoinRequestStatus;
 import com.ams.oniondomain.entity.enums.PartyRole;
+import com.ams.oniondomain.entity.enums.PartyStatus;
 import com.ams.oniondomain.entity.enums.PartyType;
 import com.ams.oniondomain.repository.GamePartyRepository;
 import com.ams.oniondomain.repository.PartyJoinRequestRepository;
@@ -45,6 +46,14 @@ public class PartyJoinRequestService {
             throw new CustomException(ErrorCode.INVALID_JOIN_TYPE);
         }
 
+        if (party.getStatus() == PartyStatus.CLOSED) {
+            throw new CustomException(ErrorCode.PARTY_CLOSED);
+        }
+
+        if (party.getCurrentPlayers() >= party.getMaxPlayer()) {
+            throw new CustomException(ErrorCode.PARTY_FULL);
+        }
+
         if (memberRepository.existsByPartyAndUser(party, user)) {
             throw new CustomException(ErrorCode.ALREADY_PARTY_MEMBER);
         }
@@ -71,8 +80,23 @@ public class PartyJoinRequestService {
             throw new CustomException(ErrorCode.INVALID_JOIN_TYPE);
         }
 
+        if (party.getStatus() == PartyStatus.CLOSED) {
+            throw new CustomException(ErrorCode.PARTY_CLOSED);
+        }
+
+        if (party.getCurrentPlayers() >= party.getMaxPlayer()) {
+            throw new CustomException(ErrorCode.PARTY_FULL);
+        }
+
         if (memberRepository.existsByPartyAndUser(party, user)) {
             throw new CustomException(ErrorCode.ALREADY_PARTY_MEMBER);
+        }
+
+        boolean alreadyPending = partyJoinRequestRepository.findAllByParty(party).stream()
+                .anyMatch(r -> r.getRequester().equals(user)
+                        && r.getStatus() == JoinRequestStatus.PENDING);
+        if (alreadyPending) {
+            throw new CustomException(ErrorCode.DUPLICATE_JOIN_REQUEST);
         }
 
         PartyJoinRequest joinRequest = PartyJoinRequest.builder()
@@ -112,16 +136,14 @@ public class PartyJoinRequestService {
             throw new CustomException(ErrorCode.ALREADY_PARTY_MEMBER);
         }
 
-        List<PartyJoinRequest> pendingRequests = partyJoinRequestRepository.findAllByParty(party).stream()
-                .filter(r -> r.getRequester().equals(requester))
-                .filter(r -> r.getStatus() == JoinRequestStatus.PENDING)
-                .toList();
-
-        if (pendingRequests.isEmpty()) {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
+        if (party.getCurrentPlayers() >= party.getMaxPlayer()) {
+            throw new CustomException(ErrorCode.PARTY_FULL);
         }
 
-        pendingRequests.forEach(PartyJoinRequest::approve);
+        partyJoinRequestRepository.findAllByParty(party).stream()
+                .filter(r -> r.getRequester().equals(requester))
+                .filter(r -> r.getStatus() == JoinRequestStatus.PENDING)
+                .forEach(PartyJoinRequest::approve);
 
         PartyMember member = PartyMember.builder()
                 .party(party)
@@ -141,22 +163,18 @@ public class PartyJoinRequestService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
 
         GameParty party = request.getParty();
-        User requester = request.getRequester();
-
         User rejector = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        PartyMember rejectorMember = memberRepository.findByPartyAndUser(party, rejector)
+        PartyMember leader = memberRepository.findByPartyAndUser(party, rejector)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_PARTY_MEMBER));
 
-        if (rejectorMember.getRole() != PartyRole.LEADER) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED); // 방장만 거절 가능
+        if (leader.getRole() != PartyRole.LEADER) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
-
         if (request.getStatus() == JoinRequestStatus.REJECTED) {
             throw new CustomException(ErrorCode.REQUEST_ALREADY_REJECTED);
         }
-
         if (request.getStatus() == JoinRequestStatus.APPROVED) {
             throw new CustomException(ErrorCode.REQUEST_ALREADY_APPROVED);
         }

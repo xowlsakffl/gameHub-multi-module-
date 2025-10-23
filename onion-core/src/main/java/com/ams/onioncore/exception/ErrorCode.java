@@ -22,6 +22,9 @@ public enum ErrorCode {
     REQUEST_ALREADY_REJECTED(HttpStatus.CONFLICT, "이미 거절된 요청입니다."),
     ALREADY_PARTY_MEMBER(HttpStatus.CONFLICT, "이미 파티에 가입된 사용자입니다."),
     INVALID_JOIN_TYPE(HttpStatus.CONFLICT, "이 파티는 참가 요청이 불가능한 타입입니다."),
+    PARTY_CLOSED(HttpStatus.BAD_REQUEST, "이미 마감된 파티입니다."),
+    PARTY_FULL(HttpStatus.BAD_REQUEST, "파티 인원이 모두 찼습니다."),
+    DUPLICATE_JOIN_REQUEST(HttpStatus.CONFLICT, "이미 대기 중인 참가 요청이 있습니다."),
 
     NOT_PARTY_MEMBER(HttpStatus.BAD_REQUEST, "해당 사용자는 파티 멤버가 아닙니다."),
     CREATOR_CANNOT_LEAVE(HttpStatus.BAD_REQUEST, "방장은 파티를 나갈 수 없습니다."),
