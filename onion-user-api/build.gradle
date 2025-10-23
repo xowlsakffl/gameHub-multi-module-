@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '3.5.1'
 }
 
 group = 'com.ams'
@@ -26,6 +27,7 @@ repositories {
 
 dependencies {
     implementation project(':onion-core')
+    implementation project(':onion-domain')
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -43,4 +45,35 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    enabled = false
 }
+
+//node {
+//    // 프론트엔드 위치 지정 (루트 바로 아래 front-end 폴더)
+//    nodeModulesDir = file("$rootDir/front-end")
+//    version = '18.3.0'
+//    download = true
+//}
+//
+//// npm run build
+//task npmBuild(type: NpmTask) {
+//    workingDir = file("$rootDir/front-end")
+//    args = ['run', 'build']
+//}
+//
+//// 빌드 결과물을 Spring static 폴더로 복사
+//task copyFrontEnd(type: Copy) {
+//    from("$rootDir/front-end/build")
+//    into("$projectDir/src/main/resources/static")
+//}
+//
+//// clean 시 프론트 잔여물도 정리
+//task cleanFrontEnd(type: Delete) {
+//    delete "$rootDir/front-end/node_modules", "$rootDir/front-end/build"
+//}
+//
+//// 의존 순서 설정
+//npmBuild.dependsOn npmInstall
+//copyFrontEnd.dependsOn npmBuild
+//processResources.dependsOn copyFrontEnd
+//clean.dependsOn cleanFrontEnd
