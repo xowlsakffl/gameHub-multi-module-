@@ -1,68 +1,81 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Onion Theme */
+@theme {
+    --font-sans: "Noto Sans KR", system-ui, sans-serif;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* 🎨 Gradient Colors */
+    --color-onion-bg1: #ff6f91;
+    --color-onion-bg2: #845ec2;
+    --color-onion-bg3: #ff9671;
+    --color-onion-bg4: #d65db1;
+
+    /* 기본 다크톤 */
+    --color-onion-background: #1e1f22;
+    --color-onion-surface: #1e1f22;  /* 카드색 */
+    --color-onion-input: #2b2d31;    /* input 배경 */
+    --color-onion-border: #3a3b3f;   /* 테두리 */
+
+    /* 포인트 블루 */
+    --color-onion-primary: #3B82F6;
+    --color-onion-primary-hover: #2563EB;
+
+    /* 텍스트 */
+    --color-onion-text: #e4e6eb;
+    --color-onion-text-muted: #9ca3af;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
+/* 공통 기본 */
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+    @apply min-h-screen text-gray-100 font-sans;
+    background: #1e1f22; /* 기본 다크 배경 (모바일용) */
+    position: relative;
+    overflow-x: hidden;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* 🖥️ PC 이상에서만 그라디언트 애니메이션 표시 */
+@media (min-width: 768px) {
+    body {
+        background: linear-gradient(
+                -45deg,
+                var(--color-onion-bg1),
+                var(--color-onion-bg2),
+                var(--color-onion-bg3),
+                var(--color-onion-bg4)
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+    }
+
+    /* 💫 하이라이트 blob 효과 (PC 전용) */
+    body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+                circle at 25% 25%,
+                rgba(255, 255, 255, 0.08),
+                transparent 60%
+        ),
+        radial-gradient(
+                circle at 75% 75%,
+                rgba(255, 255, 255, 0.1),
+                transparent 60%
+        );
+        mix-blend-mode: overlay;
+        z-index: -1;
+    }
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* 색상 애니메이션 */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
