@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(err -> err.getField() + " : " + err.getDefaultMessage())
+                .map(err -> err.getDefaultMessage())
                 .orElse(ErrorCode.BAD_REQUEST.getMessage());
         return ResponseEntity
                 .status(ErrorCode.BAD_REQUEST.getStatus())
