@@ -68,4 +68,12 @@ public class AuthService {
 
         return new TokenResponse(token);
     }
+
+    public boolean isEmailAvailable(String email) {
+        return userRepository.findByEmail(email).isEmpty();
+    }
+
+    public boolean isNicknameAvailable(String nickname) {
+        return userRepository.findByNickname(nickname).isEmpty();
+    }
 }
