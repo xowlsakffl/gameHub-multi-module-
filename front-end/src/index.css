@@ -79,3 +79,25 @@ body {
         background-position: 0% 50%;
     }
 }
+
+
+.simplebar-scrollbar::before {
+    background-color: #3a3b3f !important; /* 밝은 회색 */
+    opacity: 1 !important;
+}
+
+.simplebar-track {
+    background: transparent !important;
+}
+
+.simplebar-track.simplebar-vertical {
+    width: 8px !important;
+}
+
+.simplebar-scrollbar {
+    border-radius: 4px !important;
+}
+
+.simplebar-scrollbar.simplebar-visible::before {
+    opacity: 1 !important;
+}

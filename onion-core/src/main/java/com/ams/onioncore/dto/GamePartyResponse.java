@@ -18,7 +18,7 @@ public class GamePartyResponse {
     private int currentPlayers;
     private String description;
     private String status;
-    private String creatorEmail;
+    private String creator;
     private String createdAt;
     private String updatedAt;
 
@@ -32,7 +32,7 @@ public class GamePartyResponse {
                 .currentPlayers(party.getCurrentPlayers())
                 .description(party.getDescription())
                 .status(party.getStatus().name())
-                .creatorEmail(party.getCreator().getEmail())
+                .creator(party.getCreator().getNickname())
                 .createdAt(party.getCreatedAt().toString())
                 .updatedAt(party.getUpdatedAt() != null ? party.getUpdatedAt().toString() : null)
                 .build();

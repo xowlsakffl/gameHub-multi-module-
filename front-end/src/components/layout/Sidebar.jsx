@@ -13,10 +13,6 @@ export default function Sidebar() {
 
     return (
         <div className="flex flex-col items-center bg-onion-surface border-r border-onion-border w-20 py-4 space-y-4">
-            {/* Onion 로고 */}
-            <div className="flex items-center justify-center w-12 h-12 bg-onion-primary rounded-2xl mb-4">
-                <span className="text-xl font-bold text-white">🧅</span>
-            </div>
 
             {/* 메뉴 아이콘 목록 */}
             <div className="flex flex-col items-center space-y-3 flex-1">
