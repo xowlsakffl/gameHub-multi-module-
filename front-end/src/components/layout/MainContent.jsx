@@ -64,7 +64,20 @@ export default function MainContent() {
                     현재 오픈 파티
                 </h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                <div
+                    className="
+                        grid
+                        grid-cols-1
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                        xl:grid-cols-4
+                        gap-4
+                        mx-auto
+                        px-2
+                        pr-20      /* ← 오른쪽 사이드바 아이콘바 만큼 공간 확보 */
+                        max-w-full /* ← 불필요한 max-width 제거 */
+                    "
+                >
                     {parties.map((party) => (
                         <PartyCard key={party.id} party={party} />
                     ))}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { FaPlus, FaUserFriends, FaComments, FaHome } from "react-icons/fa";
 
-export default function Sidebar() {
+export default function LeftSidebar() {
     const [active, setActive] = useState("home");
 
     const menuItems = [

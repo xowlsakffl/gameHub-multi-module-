@@ -1,29 +1,30 @@
-import Sidebar from "../components/layout/Sidebar.jsx";
+import { useState } from "react";
+import LeftSidebar from "../components/layout/LeftSidebar.jsx";
 import Header from "../components/layout/Header.jsx";
 import MainContent from "../components/layout/MainContent.jsx";
-import FriendList from "../components/layout/FriendList.jsx";
+import RightSidebar from "../components/layout/RightSidebar.jsx";
+import FriendListPanel from "../components/layout/FriendListPanel.jsx";
 
 export default function Home() {
-    return (
-        <div className="flex h-screen bg-onion-background text-[var(--color-onion-text)] overflow-hidden">
-            {/* 좌측 사이드바 */}
-            <Sidebar />
+    const [friendOpen, setFriendOpen] = useState(false);
 
-            {/* 중앙 메인 레이아웃 */}
+    return (
+        <div className="flex h-screen bg-onion-background overflow-hidden">
+            <LeftSidebar />
+
             <div className="flex flex-col flex-1 overflow-hidden">
-                {/* 상단 헤더 */}
                 <Header />
 
-                {/* 중앙 콘텐츠 + 우측 친구목록 */}
-                <div className="flex flex-1 overflow-hidden">
-                    {/* 메인 콘텐츠 영역 */}
+                <div className="flex flex-1 overflow-hidden relative">
                     <div className="flex-1 overflow-y-auto">
                         <MainContent />
                     </div>
 
-                    {/* 우측 친구목록 */}
-                    <FriendList />
+                    <RightSidebar friendOpen={friendOpen} setFriendOpen={setFriendOpen} />
+
+                    <FriendListPanel open={friendOpen} setOpen={setFriendOpen} />
                 </div>
+
             </div>
         </div>
     );
