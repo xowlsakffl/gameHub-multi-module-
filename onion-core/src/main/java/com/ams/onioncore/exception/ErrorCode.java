@@ -15,6 +15,10 @@ public enum ErrorCode {
 
     // 사용자 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    CANNOT_ADD_SELF(HttpStatus.NOT_FOUND, "자기 자신은 추가할 수 없습니다."),
+    ALREADY_FRIENDS(HttpStatus.NOT_FOUND, "이미 친구 목록에 존재합니다."),
+    ALREADY_REQUESTED(HttpStatus.NOT_FOUND, "이미 요청을 보냈습니다."),
+    REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "요청을 찾을 수 없습니다."),
 
     // 파티 관련
     PARTY_NOT_FOUND(HttpStatus.NOT_FOUND, "파티를 찾을 수 없습니다."),
