@@ -64,7 +64,7 @@ export default function Login() {
         <div className="flex items-center justify-center min-h-screen px-4">
             <div className="bg-onion-surface w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-8 rounded-2xl shadow-2xl">
                 <h2 className="text-3xl font-semibold mb-8 text-center text-[var(--color-onion-text)]">
-                    Onion 로그인
+                    GAMEHUB 로그인
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>

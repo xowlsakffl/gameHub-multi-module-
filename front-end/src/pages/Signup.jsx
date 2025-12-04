@@ -138,7 +138,7 @@ export default function Signup() {
         <div className="flex items-center justify-center min-h-screen px-4">
             <div className="bg-onion-surface w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-8 rounded-2xl shadow-2xl">
                 <h2 className="text-3xl font-semibold mb-8 text-center text-[var(--color-onion-text)]">
-                    Onion 회원가입
+                    GAMEHUB 회원가입
                 </h2>
 
                 <form onSubmit={handleSignup} className="space-y-5" noValidate>
