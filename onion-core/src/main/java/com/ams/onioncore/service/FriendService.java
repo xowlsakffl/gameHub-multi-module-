@@ -29,11 +29,12 @@ public class FriendService {
     private final FriendshipRepository friendshipRepository;
 
     /** 친구 요청 보내기 */
-    public void sendRequest(String fromNickname, FriendRequestRequest request) {
+    public void sendRequest(String fromEmail, FriendRequestRequest request) {
 
-        User from = userRepository.findByNickname(fromNickname)
+        User from = userRepository.findByEmail(fromEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // 검색은 닉네임 기반 (유저가 입력함)
         User to = userRepository.findByNickname(request.getToNickname())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -60,9 +61,9 @@ public class FriendService {
 
     /** 받은 요청 목록 */
     @Transactional(readOnly = true)
-    public List<FriendRequestResponse> getReceivedRequests(String nickname) {
+    public List<FriendRequestResponse> getReceivedRequests(String email) {
 
-        User me = userRepository.findByNickname(nickname)
+        User me = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return friendRequestRepository.findByToUserAndStatus(me, FriendRequestStatus.PENDING)
@@ -73,9 +74,9 @@ public class FriendService {
 
     /** 보낸 요청 목록 */
     @Transactional(readOnly = true)
-    public List<FriendRequestResponse> getSentRequests(String nickname) {
+    public List<FriendRequestResponse> getSentRequests(String email) {
 
-        User me = userRepository.findByNickname(nickname)
+        User me = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return friendRequestRepository.findByFromUserAndStatus(me, FriendRequestStatus.PENDING)
@@ -85,27 +86,26 @@ public class FriendService {
     }
 
     /** 친구 요청 수락 */
-    public void acceptRequest(String myNickname, Long requestId) {
+    public void acceptRequest(String email, Long requestId) {
 
         FriendRequest req = friendRequestRepository.findById(requestId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REQUEST_NOT_FOUND));
 
-        if (!req.getToUser().getNickname().equals(myNickname)) {
+        if (!req.getToUser().getEmail().equals(email)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
         req.accept();
-
         friendshipRepository.save(Friendship.of(req.getFromUser(), req.getToUser()));
     }
 
     /** 친구 요청 거절 */
-    public void rejectRequest(String myNickname, Long requestId) {
+    public void rejectRequest(String email, Long requestId) {
 
         FriendRequest req = friendRequestRepository.findById(requestId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REQUEST_NOT_FOUND));
 
-        if (!req.getToUser().getNickname().equals(myNickname)) {
+        if (!req.getToUser().getEmail().equals(email)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
@@ -114,19 +114,19 @@ public class FriendService {
 
     /** 친구 목록 조회 */
     @Transactional(readOnly = true)
-    public List<FriendResponse> getFriends(String nickname) {
+    public List<FriendResponse> getFriends(String email) {
 
-        User me = userRepository.findByNickname(nickname)
+        User me = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         List<Friendship> list = friendshipRepository.findByUser1OrUser2(me, me);
 
         return list.stream()
-                .map(fs -> FriendResponse.from(fs, nickname))
+                .map(fs -> FriendResponse.from(fs, me.getNickname()))
                 .toList();
     }
 
-    /** 친구 여부 확인 */
+    /** 두 유저가 친구인지 확인 */
     private boolean isFriends(User a, User b) {
 
         Long aId = a.getId();
@@ -138,3 +138,4 @@ public class FriendService {
         return friendshipRepository.findByUser1AndUser2(user1, user2).isPresent();
     }
 }
+
