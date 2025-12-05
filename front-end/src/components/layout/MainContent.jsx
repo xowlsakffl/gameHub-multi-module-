@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "../../api/axios.js";
 import SimpleBar from 'simplebar-react';
 import PartyCard from "../party/PartyCard.jsx";
 
@@ -16,7 +16,7 @@ export default function MainContent() {
         setLoading(true);
 
         try {
-            const res = await axios.get("/api/party", {
+            const res = await api.get("/party", {
                 params: {
                     page: pageNum,
                     size: 10,
@@ -42,9 +42,7 @@ export default function MainContent() {
 
         const observer = new IntersectionObserver(
             (entries) => {
-                const entry = entries[0];
-
-                if (entry.isIntersecting && !loading && page + 1 < totalPages) {
+                if (entries[0].isIntersecting && !loading && page + 1 < totalPages) {
                     const next = page + 1;
                     setPage(next);
                     fetchParties(next);
@@ -74,8 +72,8 @@ export default function MainContent() {
                         gap-4
                         mx-auto
                         px-2
-                        pr-20      /* ← 오른쪽 사이드바 아이콘바 만큼 공간 확보 */
-                        max-w-full /* ← 불필요한 max-width 제거 */
+                        pr-20
+                        max-w-full
                     "
                 >
                     {parties.map((party) => (
@@ -83,7 +81,6 @@ export default function MainContent() {
                     ))}
                 </div>
 
-                {/* 무한 스크롤 트리거 */}
                 <div ref={observerRef} className="h-16" />
 
                 {loading && (

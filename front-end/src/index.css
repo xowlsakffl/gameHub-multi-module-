@@ -101,3 +101,26 @@ body {
 .simplebar-scrollbar.simplebar-visible::before {
     opacity: 1 !important;
 }
+
+@keyframes modalPop {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-modalPop {
+    animation: modalPop 0.15s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+button, [role="button"], .clickable {
+    cursor: pointer;
+}
+
