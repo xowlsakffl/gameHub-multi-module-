@@ -32,11 +32,13 @@ public class PartyChatService {
     private final GamePartyRepository gamePartyRepository;
     private final UserRepository userRepository;
     private final PartyMemberRepository partyMemberRepository;
+    private final PartyMuteService partyMuteService;
 
     public PartyChatMessageResponse sendMessage(String email, Long partyId, String content) {
         GameParty party = getParty(partyId);
         User user = getUser(email);
         validatePartyMember(party, user);
+        partyMuteService.validateNotMuted(party, user);
 
         PartyChatMessage message = PartyChatMessage.builder()
                 .party(party)

@@ -6,12 +6,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.security.SecureRandom;
 
 @Entity
 @Table(name = "game_party")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameParty {
+    private static final String INVITE_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    private static final int INVITE_CODE_LENGTH = 8;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +50,9 @@ public class GameParty {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "invite_code", nullable = false, unique = true, length = 16)
+    private String inviteCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private User creator;
@@ -59,6 +67,7 @@ public class GameParty {
         this.description = description;
         this.creator = creator;
         this.status = PartyStatus.OPEN;
+        this.inviteCode = generateInviteCode();
     }
 
     @PrePersist
@@ -66,6 +75,7 @@ public class GameParty {
         createdAt = LocalDateTime.now();
         if (status == null) status = PartyStatus.OPEN;
         if (currentPlayers == 0) currentPlayers = 1;
+        if (inviteCode == null || inviteCode.isBlank()) inviteCode = generateInviteCode();
     }
 
     @PreUpdate
@@ -93,5 +103,18 @@ public class GameParty {
 
     public void decrementPlayers() {
         if (this.currentPlayers > 0) this.currentPlayers--;
+    }
+
+    public void regenerateInviteCode() {
+        this.inviteCode = generateInviteCode();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    private String generateInviteCode() {
+        StringBuilder builder = new StringBuilder(INVITE_CODE_LENGTH);
+        for (int i = 0; i < INVITE_CODE_LENGTH; i++) {
+            builder.append(INVITE_CODE_CHARS.charAt(RANDOM.nextInt(INVITE_CODE_CHARS.length())));
+        }
+        return builder.toString();
     }
 }

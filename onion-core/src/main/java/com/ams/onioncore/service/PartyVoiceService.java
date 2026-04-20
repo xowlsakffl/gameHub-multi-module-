@@ -28,11 +28,13 @@ public class PartyVoiceService {
     private final UserRepository userRepository;
     private final PartyMemberRepository partyMemberRepository;
     private final PartyVoicePresenceRepository partyVoicePresenceRepository;
+    private final PartyMuteService partyMuteService;
 
     public PartyVoiceEventResponse join(String email, Long partyId, String channelName) {
         GameParty party = getParty(partyId);
         User user = getUser(email);
         validatePartyMember(party, user);
+        partyMuteService.validateNotMuted(party, user);
 
         String normalizedChannel = channelName.trim();
         String eventType = "VOICE_JOIN";

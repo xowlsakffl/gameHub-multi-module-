@@ -44,6 +44,10 @@ public class GamePartyService {
                 .status(PartyStatus.OPEN)
                 .build();
 
+        while (gamePartyRepository.existsByInviteCode(party.getInviteCode())) {
+            party.regenerateInviteCode();
+        }
+
         gamePartyRepository.save(party);
 
         PartyMember leader = PartyMember.builder()
