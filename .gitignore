@@ -40,3 +40,6 @@ out/
 .env
 .env.*
 !.env.example
+
+# Generated frontend bundle copied by Gradle task
+onion-user-api/src/main/resources/static/
