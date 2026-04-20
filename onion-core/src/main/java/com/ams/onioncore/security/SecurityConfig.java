@@ -32,8 +32,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/party/**").permitAll()
-                        .requestMatchers("/api/friends/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/party", "/api/party/*", "/api/party/*/members").permitAll()
+                        .requestMatchers("/api/friends/**").authenticated()
+                        .requestMatchers("/api/party/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

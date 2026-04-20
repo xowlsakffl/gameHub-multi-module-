@@ -112,7 +112,11 @@ public class GamePartyService {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
-        party.changeStatus(PartyStatus.valueOf(newStatus));
+        try {
+            party.changeStatus(PartyStatus.valueOf(newStatus.toUpperCase()));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
         return GamePartyResponse.from(party);
     }
 }
