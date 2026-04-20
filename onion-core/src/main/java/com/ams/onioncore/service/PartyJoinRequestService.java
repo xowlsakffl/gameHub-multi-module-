@@ -92,9 +92,8 @@ public class PartyJoinRequestService {
             throw new CustomException(ErrorCode.ALREADY_PARTY_MEMBER);
         }
 
-        boolean alreadyPending = partyJoinRequestRepository.findAllByParty(party).stream()
-                .anyMatch(r -> r.getRequester().equals(user)
-                        && r.getStatus() == JoinRequestStatus.PENDING);
+        boolean alreadyPending = partyJoinRequestRepository
+                .existsByPartyAndRequesterAndStatus(party, user, JoinRequestStatus.PENDING);
         if (alreadyPending) {
             throw new CustomException(ErrorCode.DUPLICATE_JOIN_REQUEST);
         }
