@@ -32,6 +32,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/ws-chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/party", "/api/party/*", "/api/party/*/members").permitAll()
                         .requestMatchers("/api/friends/**").authenticated()
                         .requestMatchers("/api/party/**").authenticated()
