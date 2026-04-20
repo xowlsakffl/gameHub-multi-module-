@@ -1,7 +1,5 @@
 ﻿# GameHub 멀티 모듈 웹 솔루션 API
 
-![GameHub 사용자 화면](https://dummyimage.com/1200x630/101826/ffffff&text=GameHub+Party+Hub)
-
 GameHub는 디스코드형 게임 파티 운영을 위한 멀티 모듈 기반 웹 서비스입니다. 이 저장소는 사용자 인증, 파티 생성/참가, 친구 기능, 실시간 채팅, 음성채널 상태, 권한/초대/뮤트 관리까지 포함한 Spring Boot + React 구조를 제공합니다.
 
 포트폴리오 관점에서 핵심은 단순 CRUD를 넘어, 모듈 분리(`domain/core/user-api/admin-api`)를 유지하면서 JWT 인증, WebSocket(STOMP) 실시간 이벤트, 파티 멤버 권한 정책(방장/운영진/일반), 초대코드 기반 진입 흐름을 실제 서비스 형태로 통합한 점입니다.
