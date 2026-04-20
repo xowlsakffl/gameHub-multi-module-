@@ -4,6 +4,7 @@ import com.ams.onioncore.dto.ApiResponse;
 import com.ams.onioncore.dto.GamePartyRequest;
 import com.ams.onioncore.dto.GamePartyResponse;
 import com.ams.onioncore.service.GamePartyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class GamePartyController {
     @PostMapping
     public ResponseEntity<ApiResponse<GamePartyResponse>> create(
             @AuthenticationPrincipal(expression = "username") String email,
-            @RequestBody GamePartyRequest request
+            @Valid @RequestBody GamePartyRequest request
     ) {
         log.info("Authenticated user: {}", email);
         GamePartyResponse response = gamePartyService.create(email, request);

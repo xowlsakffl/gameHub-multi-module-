@@ -4,6 +4,7 @@ import com.ams.onioncore.dto.ApiResponse;
 import com.ams.onioncore.dto.JoinRequest;
 import com.ams.onioncore.dto.JoinResponse;
 import com.ams.onioncore.service.PartyJoinRequestService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class PartyJoinRequestController {
     public ResponseEntity<ApiResponse<JoinResponse>> requestJoin(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long partyId,
-            @RequestBody JoinRequest request
+            @Valid @RequestBody JoinRequest request
     ) {
         log.info("참가 요청 by user: {}, partyId: {}", email, partyId);
 
